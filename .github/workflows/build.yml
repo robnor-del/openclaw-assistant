@@ -1,3 +1,4 @@
+
 name: Build APK
 
 on: [workflow_dispatch]
@@ -16,14 +17,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Создание Firebase заглушки
+        run: cp app/google-services.json.example app/google-services.json
+
       - name: Выдача прав на запуск Gradle
         run: chmod +x ./gradlew
 
-      - name: Сборка Debug APK
-        run: ./gradlew assembleDebug
+      - name: Сборка Debug APK без Firebase
+        run: FIREBASE_ENABLED=false ./gradlew assembleFullDebug
 
       - name: Загрузка готового APK
         uses: actions/upload-artifact@v7
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: openclaw-assistant-full-debug
+          path: app/build/outputs/apk/full/debug/*.apk
+          if-no-files-found: error
